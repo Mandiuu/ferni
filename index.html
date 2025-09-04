@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Adivina el Precio - Baby Shower</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+
+        .game-area {
+            padding: 20px;
+        }
+
+        .product-card {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .product-image {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-name {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.3;
+            padding: 0 10px;
+            min-height: 2.6em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .price-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 0 10px;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .price-wrapper:focus-within {
+            border-color: #667eea;
+        }
+
+        .price-input {
+            padding: 12px 5px;
+            font-size: 1.1em;
+            border: none;
+            background: transparent;
+            width: 140px;
+            outline: none;
+        }
+
+        /* Remover flechas del input number en móviles */
+        .price-input::-webkit-inner-spin-button,
+        .price-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .price-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.95em;
+            animation: fadeIn 0.5s ease-out;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .correct {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #0a5f0a;
+            border: 2px solid #52c234;
+        }
+
+        .incorrect {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #8b4513;
+            border: 2px solid #e17055;
+        }
+
+        .score {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            gap: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .score-label {
+            color: #666;
+            font-size: 0.75em;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .next-btn {
+            width: 100%;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 14px;
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .game-over h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .restart-btn {
+            padding: 14px 35px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .restart-btn:active {
+            transform: scale(0.95);
+        }
+
+        .confetti {
+            position: fixed;
+            top: -10px;
+            animation: fall 3s linear;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(calc(100vh + 10px)) rotate(360deg);
+            }
+        }
+
+        .exact-price-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            animation: pulse 1s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Ajustes para pantallas muy pequeñas */
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 1.3em;
+            }
+            
+            .product-name {
+                font-size: 1em;
+            }
+            
+            .price-input {
+                width: 120px;
+            }
+        }
+
+        /* Ajustes para landscape */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .header {
+                padding: 15px;
+            }
+            
+            .product-image {
+                width: 80px;
+                height: 80px;
+                font-size: 2em;
+            }
+            
+            .game-area {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍼 Adivina el Precio 🎯</h1>
+            <p>¿Cuánto cuesta tener una guagua?</p>
+        </div>
+        
+        <div id="gameContent" class="game-area">
+            <!-- El contenido del juego se generará dinámicamente -->
+        </div>
+    </div>
+
+    <script>
+        // Productos con precios reales de Líder.cl
+        const products = [
+            { name: "Pañales Huggies Recién Nacido (36 un)", price: 17990, emoji: "👶" },
+            { name: "Mamadera Avent 260ml", price: 16990, emoji: "🍼" },
+            { name: "Chupete Pigeon Silicona", price: 8760, emoji: "🍼" },
+            { name: "Toallitas Húmedas Babysec (45 un)", price: 1500, emoji: "🧻" },
+            { name: "Leche Nido en Polvo Etapa 1+ Bolsa 700g", price: 7990, emoji: "🥛" },
+            { name: "Set 2 Bodys Manga Larga Azul 0-3 Meses", price: 10390, emoji: "👕" },
+            { name: "Babero Silicona Infanti", price: 5990, emoji: "👶" },
+            { name: "Shampoo Johnson's Baby 400ml", price: 4990, emoji: "🧴" },
+            { name: "Crema Hipoglós 20g", price: 3990, emoji: "🧴" },
+            { name: "Monitor de Bebé VTech", price: 79990, emoji: "📱" },
+            { name: "Coche Paraguas Bebesit", price: 59990, emoji: "🚼" },
+            { name: "Silla Auto Convertible I-Giro 360", price: 129990, emoji: "🚗" },
+            { name: "Mamadera Boca Ancha con Asa 250ml", price: 3690, emoji: "🍼" },
+            { name: "Termómetro Digital Bebé", price: 4290, emoji: "🌡️" },
+            { name: "Colado Pollo y Verduras 215g", price: 2190, emoji: "🥦" }
+        ];
+
+        let currentProductIndex = 0;
+        let score = 0;
+        let attempts = 0;
+        let gameProducts = [];
+
+        function initGame() {
+            gameProducts = [...products].sort(() => Math.random() - 0.5).slice(0, 10);
+            currentProductIndex = 0;
+            score = 0;
+            attempts = 0;
+            showProduct();
+        }
+
+        function showProduct() {
+            if (currentProductIndex >= gameProducts.length) {
+                showGameOver();
+                return;
+            }
+
+            const product = gameProducts[currentProductIndex];
+            const gameContent = document.getElementById('gameContent');
+            
+            gameContent.innerHTML = `
+                <div class="product-card">
+                    <div class="product-image">${product.emoji}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="input-group">
+                        <div class="price-wrapper">
+                            <span style="font-size: 1.2em; color: #666;">$</span>
+                            <input type="number" id="priceInput" class="price-input" placeholder="Precio" min="0" inputmode="numeric">
+                        </div>
+                        <button onclick="checkPrice()" class="btn">Verificar</button>
+                    </div>
+                    <div id="result"></div>
+                </div>
+                <div class="score">
+                    <div class="score-item">
+                        <div class="score-label">Producto</div>
+                        <div class="score-value">${currentProductIndex + 1}/${gameProducts.length}</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Correctas</div>
+                        <div class="score-value" style="color: #52c234;">${score}</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Intentos</div>
+                        <div class="score-value">${attempts}</div>
+                    </div>
+                </div>
+            `;
+
+            // Permitir enviar con Enter
+            document.getElementById('priceInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPrice();
+                }
+            });
+
+            // Auto focus en el input (con delay para móviles)
+            setTimeout(() => {
+                document.getElementById('priceInput').focus();
+            }, 100);
+        }
+
+        function checkPrice() {
+            const input = document.getElementById('priceInput');
+            const resultDiv = document.getElementById('result');
+            const guessedPrice = parseInt(input.value);
+            
+            if (!guessedPrice || guessedPrice < 0) {
+                alert('Por favor ingresa un precio válido');
+                return;
+            }
+
+            attempts++;
+            const product = gameProducts[currentProductIndex];
+            const minCorrectPrice = product.price * 0.9; // 90% del precio real
+            const maxCorrectPrice = product.price * 1.1; // 110% del precio real
+            const percentage = Math.round((guessedPrice / product.price) * 100);
+            
+            if (guessedPrice >= minCorrectPrice && guessedPrice <= maxCorrectPrice) {
+                score++;
+                resultDiv.className = 'result correct';
+                const exactMatch = guessedPrice === product.price;
+                resultDiv.innerHTML = `
+                    <div style="font-size: 1.5em;">🎉 ¡CORRECTO! 🎉</div>
+                    ${exactMatch ? '<div class="exact-price-badge">⭐ ¡PRECIO EXACTO! ⭐</div>' : ''}
+                    <div style="margin-top: 10px;">
+                        <div><strong>Precio real:</strong> $${product.price.toLocaleString('es-CL')}</div>
+                        <div><strong>Tu respuesta:</strong> $${guessedPrice.toLocaleString('es-CL')}</div>
+                        <div style="font-size: 0.85em; margin-top: 8px; opacity: 0.9;">Precisión: ${percentage}%</div>
+                    </div>
+                `;
+                createConfetti();
+            } else {
+                resultDiv.className = 'result incorrect';
+                resultDiv.innerHTML = `
+                    <div style="font-size: 1.3em;">❌ Incorrecto</div>
+                    <div style="margin-top: 10px;">
+                        <div><strong>Precio real:</strong> $${product.price.toLocaleString('es-CL')}</div>
+                        <div><strong>Tu respuesta:</strong> $${guessedPrice.toLocaleString('es-CL')}</div>
+                        <div style="font-size: 0.85em; margin-top: 8px; opacity: 0.9;">
+                            Precisión: ${percentage}%<br>
+                            <span style="font-size: 0.9em;">Rango válido: $${Math.round(minCorrectPrice).toLocaleString('es-CL')} - $${Math.round(maxCorrectPrice).toLocaleString('es-CL')}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Deshabilitar input y botón
+            input.disabled = true;
+            document.querySelector('.btn').disabled = true;
+
+            // Mostrar botón siguiente después de un breve delay
+            setTimeout(() => {
+                resultDiv.innerHTML += `<button onclick="nextProduct()" class="btn next-btn">Siguiente →</button>`;
+            }, 800);
+        }
+
+        function nextProduct() {
+            currentProductIndex++;
+            showProduct();
+        }
+
+        function showGameOver() {
+            const gameContent = document.getElementById('gameContent');
+            const percentage = Math.round((score / gameProducts.length) * 100);
+            
+            let emoji = '🎯';
+            let message = '¡Buen intento!';
+            
+            if (percentage >= 80) {
+                emoji = '🏆';
+                message = '¡Excelente!';
+            } else if (percentage >= 60) {
+                emoji = '🥈';
+                message = '¡Muy bien!';
+            } else if (percentage >= 40) {
+                emoji = '🥉';
+                message = '¡Bien!';
+            }
+            
+            gameContent.innerHTML = `
+                <div class="game-over">
+                    <h2>🎊 ¡Juego Terminado! 🎊</h2>
+                    <div class="final-score">
+                        <div style="font-size: 3em; margin-bottom: 15px;">${emoji}</div>
+                        <div style="font-size: 1.3em; color: #667eea; margin-bottom: 10px;">${message}</div>
+                        <div>Acertaste: <strong>${score} de ${gameProducts.length}</strong></div>
+                        <div>Porcentaje: <strong>${percentage}%</strong></div>
+                    </div>
+                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <p style="color: #666; font-size: 0.95em;">¡Gracias por jugar! 🎈</p>
+                    </div>
+                </div>
+            `;
+
+            if (percentage >= 60) {
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => createConfetti(), i * 150);
+                }
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#f093fb', '#f5576c', '#667eea', '#764ba2', '#84fab0', '#8fd3f4', '#ffd700'];
+            for (let i = 0; i < 15; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 8 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.borderRadius = '50%';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        // Prevenir zoom en iOS cuando se hace focus en el input
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.nodeName === 'INPUT') {
+                e.target.style.fontSize = '16px';
+            }
+        });
+
+        // Iniciar el juego cuando carga la página
+        initGame();
+    </script>
+</body>
+</html>
