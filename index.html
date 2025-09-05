@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adivina el Precio - Baby Shower Ferni</title>
+    <title>Adivina el Precio - Baby Shower</title>
     <style>
         * {
             margin: 0;
@@ -253,21 +253,6 @@
             line-height: 1.5;
         }
 
-        .restart-btn {
-            padding: 14px 35px;
-            font-size: 1.1em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .restart-btn:active {
-            transform: scale(0.95);
-        }
-
         .confetti {
             position: fixed;
             top: -10px;
@@ -346,7 +331,8 @@
         // Productos con precios reales de Líder.cl
         const products = [
             { name: "Pañales Huggies Recién Nacido (36 un)", price: 17990, emoji: "👶" },
-            { name: "Chupete Pigeon Silicona", price: 8760, emoji: "🍼" },
+            { name: "Mamadera Avent 260ml", price: 8490, emoji: "🍼" },
+            { name: "Chupete Pigeon Silicona", price: 5790, emoji: "🍼" },
             { name: "Toallitas Húmedas Babysec (45 un)", price: 1500, emoji: "🧻" },
             { name: "Leche Nido en Polvo Etapa 1+ Bolsa 700g", price: 7990, emoji: "🥛" },
             { name: "Set 2 Bodys Manga Larga Azul 0-3 Meses", price: 10390, emoji: "👕" },
@@ -356,7 +342,6 @@
             { name: "Monitor de Bebé VTech", price: 79990, emoji: "📱" },
             { name: "Coche Paraguas Bebesit", price: 59990, emoji: "🚼" },
             { name: "Silla Auto Convertible I-Giro 360", price: 129990, emoji: "🚗" },
-            { name: "Mamadera Boca Ancha con Asa 250ml", price: 3690, emoji: "🍼" },
             { name: "Termómetro Digital Bebé", price: 4290, emoji: "🌡️" },
             { name: "Colado Pollo y Verduras 215g", price: 2190, emoji: "🥦" }
         ];
@@ -365,8 +350,47 @@
         let score = 0;
         let attempts = 0;
         let gameProducts = [];
+        let gameStarted = false;
 
-        function initGame() {
+        function showWelcome() {
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 4em; margin-bottom: 20px;">👶</div>
+                    <h2 style="color: #667eea; font-size: 1.8em; margin-bottom: 20px;">¡Bienvenidos al Baby Shower de Pepito!</h2>
+                    
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                        <p style="font-size: 1.1em; color: #495057; line-height: 1.6; margin-bottom: 15px;">
+                            Celebremos la llegada de la mejor guagua 🎊
+                        </p>
+                       
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #fff4e6 0%, #ffe0b2 100%); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid #ffb74d;">
+                        <h3 style="color: #e65100; font-size: 1.3em; margin-bottom: 15px;">📝 Cómo jugar:</h3>
+                        <div style="text-align: left; color: #666; font-size: 0.95em; line-height: 1.8;">
+                            <p>1️⃣ Verás cosas de guagua</p>
+                            <p>2️⃣ Adivina el precio</p>
+                            <p>3️⃣ Ganas si tu precio tiene menos del 15% de diferencia</p>
+                            <p>4️⃣ ¡Bonus especial si aciertas el precio exacto! ⭐</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <button onclick="startGame()" class="btn" style="padding: 16px 40px; font-size: 1.2em; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            🎯 ¡Comenzar a Jugar! 🎯
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 20px; font-size: 0.9em; color: #999;">
+                        <p>10 productos • Solo una oportunidad</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startGame() {
+            gameStarted = true;
             gameProducts = [...products].sort(() => Math.random() - 0.5).slice(0, 10);
             currentProductIndex = 0;
             score = 0;
@@ -402,7 +426,7 @@
                         <div class="score-value">${currentProductIndex + 1}/${gameProducts.length}</div>
                     </div>
                     <div class="score-item">
-                        <div class="score-label">Correctas</div>
+                        <div class="score-label">Puntos</div>
                         <div class="score-value" style="color: #52c234;">${score}</div>
                     </div>
                     <div class="score-item">
@@ -437,11 +461,16 @@
 
             attempts++;
             const product = gameProducts[currentProductIndex];
-            const minCorrectPrice = product.price * 0.9; // 90% del precio real
-            const maxCorrectPrice = product.price * 1.1; // 110% del precio real
-            const percentage = Math.round((guessedPrice / product.price) * 100);
             
-            if (guessedPrice >= minCorrectPrice && guessedPrice <= maxCorrectPrice) {
+            // Calcular el porcentaje de diferencia
+            const difference = Math.abs(product.price - guessedPrice);
+            const percentageDifference = (difference / product.price) * 100;
+            const precision = Math.round((guessedPrice / product.price) * 100);
+            
+            // Considerar correcto si la diferencia es 10% o menos
+            const isCorrect = percentageDifference <= 10;
+            
+            if (isCorrect) {
                 score++;
                 resultDiv.className = 'result correct';
                 const exactMatch = guessedPrice === product.price;
@@ -449,22 +478,27 @@
                     <div style="font-size: 1.5em;">🎉 ¡CORRECTO! 🎉</div>
                     ${exactMatch ? '<div class="exact-price-badge">⭐ ¡PRECIO EXACTO! ⭐</div>' : ''}
                     <div style="margin-top: 10px;">
-                        <div><strong>Precio real:</strong> $${product.price.toLocaleString('es-CL')}</div>
-                        <div><strong>Tu respuesta:</strong> $${guessedPrice.toLocaleString('es-CL')}</div>
-                        <div style="font-size: 0.85em; margin-top: 8px; opacity: 0.9;">Precisión: ${percentage}%</div>
+                        <div><strong>Precio real:</strong> ${product.price.toLocaleString('es-CL')}</div>
+                        <div><strong>Tu respuesta:</strong> ${guessedPrice.toLocaleString('es-CL')}</div>
+                        <div style="font-size: 0.85em; margin-top: 8px; opacity: 0.9;">
+                            Diferencia: ${percentageDifference.toFixed(1)}%<br>
+                            Precisión: ${precision}%
+                        </div>
                     </div>
                 `;
                 createConfetti();
             } else {
                 resultDiv.className = 'result incorrect';
+                const minPrice = Math.round(product.price * 0.9);
+                const maxPrice = Math.round(product.price * 1.1111); // 10% más alto permitido
                 resultDiv.innerHTML = `
                     <div style="font-size: 1.3em;">❌ Incorrecto</div>
                     <div style="margin-top: 10px;">
-                        <div><strong>Precio real:</strong> $${product.price.toLocaleString('es-CL')}</div>
-                        <div><strong>Tu respuesta:</strong> $${guessedPrice.toLocaleString('es-CL')}</div>
+                        <div><strong>Precio real:</strong> ${product.price.toLocaleString('es-CL')}</div>
+                        <div><strong>Tu respuesta:</strong> ${guessedPrice.toLocaleString('es-CL')}</div>
                         <div style="font-size: 0.85em; margin-top: 8px; opacity: 0.9;">
-                            Precisión: ${percentage}%<br>
-                            <span style="font-size: 0.9em;">Rango válido: $${Math.round(minCorrectPrice).toLocaleString('es-CL')} - $${Math.round(maxCorrectPrice).toLocaleString('es-CL')}</span>
+                            Diferencia: ${percentageDifference.toFixed(1)}%<br>
+                            <span style="font-size: 0.9em;">Rango válido: ${minPrice.toLocaleString('es-CL')} - ${maxPrice.toLocaleString('es-CL')}</span>
                         </div>
                     </div>
                 `;
@@ -549,8 +583,10 @@
             }
         });
 
-        // Iniciar el juego cuando carga la página
-        initGame();
+        // Iniciar mostrando la pantalla de bienvenida
+        window.onload = function() {
+            showWelcome();
+        };
     </script>
 </body>
 </html>
